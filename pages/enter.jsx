@@ -1,10 +1,12 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
-import { cls } from "@/libs/utils";
+import useMutation from "@/libs/client/useMutation";
+import { cls } from "@/libs/client/utils";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Enter() {
+  const [enter, { loading, data, error }] = useMutation("/api/users/enter");
   const [submitting, setSubmitting] = useState(false);
   const { register, handleSubmit, reset } = useForm();
   const [method, setMethod] = useState("email");
@@ -16,18 +18,10 @@ export default function Enter() {
     reset();
     setMethod("phone");
   };
-  const onValid = (data) => {
-    setSubmitting(true);
-    fetch("/api/users/enter", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then(() => {
-      setSubmitting(false);
-    });
+  const onValid = (validForm) => {
+    enter(validForm);
   };
+  console.log(loading, data, error);
   return (
     <div className="mt-10 px-4">
       <h3 className="text-center text-3xl font-bold">Enter to CocoHaru</h3>
