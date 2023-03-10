@@ -27,14 +27,14 @@ async function handler(req, res) {
     },
   });
   if (email) {
-    const email = await mail.send({
+    /* const email = await mail.send({
       from: "cocoharudev@gmail.com",
       to: "cocoharudev@gmail.com",
       subject: "Your cocoharu Verification Email",
       text: `Your token is ${payload}`,
       html: `<strong>Your token is ${payload}<strong>`,
     });
-    console.log(token);
+    console.log(token); */
   }
   return res.json({
     ok: true,
