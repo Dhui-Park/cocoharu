@@ -1,9 +1,8 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import withHandler from "@/libs/server/withHandler";
 import client from "@/libs/server/client";
+import { withApiSession } from "@/libs/server/withSession";
 
 async function handler(req, res) {
-  console.log(req.session.user);
   const profile = await client.user.findUnique({
     where: { id: req.session.user?.id },
   });
@@ -13,7 +12,4 @@ async function handler(req, res) {
   });
 }
 
-export default withIronSessionApiRoute(withHandler("GET", handler), {
-  cookieName: "cocoharusession",
-  password: "987987987987987987987987aerwfgsfdfadfsdgaerfddsfargafgasdfsadfs",
-});
+export default withApiSession(withHandler("GET", handler));
