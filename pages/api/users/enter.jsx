@@ -1,64 +1,44 @@
 import client from "@/libs/server/client";
 import withHandler from "@/libs/server/withHandler";
 import { Prisma } from "@prisma/client";
+import mail from "@sendgrid/mail";
+
+mail.setApiKey(process.env.SENDGRID_API_KEY);
 
 async function handler(req, res) {
   const { phone, email } = req.body;
-  const payload = phone ? { phone: +phone } : { email };
+  const user = phone ? { phone: +phone } : email ? { email } : null;
+  if (!user) return res.status(400).json({ ok: false });
+  const payload = Math.floor(100000 + Math.random() * 900000) + "";
   const token = await client.token.create({
     data: {
-      payload: "1234",
+      payload,
       user: {
         connectOrCreate: {
           where: {
-            ...payload,
+            ...user,
           },
           create: {
             name: "Anonymous",
-            ...payload,
+            ...user,
           },
         },
       },
     },
   });
-  console.log(token);
-  /* if (email) {
-    user = await client.user.findUnique({
-      where: {
-        email,
-      },
+  if (email) {
+    const email = await mail.send({
+      from: "cocoharudev@gmail.com",
+      to: "cocoharudev@gmail.com",
+      subject: "Your cocoharu Verification Email",
+      text: `Your token is ${payload}`,
+      html: `<strong>Your token is ${payload}<strong>`,
     });
-    if (user) console.log("found it.");
-    if (!user) {
-      console.log("Did not found. Will create.");
-      user = await client.user.create({
-        data: {
-          name: "Anonymous",
-          email,
-        },
-      });
-    }
-    console.log(user);
+    console.log(token);
   }
-  if (phone) {
-    user = await client.user.findUnique({
-      where: {
-        phone: +phone,
-      },
-    });
-    if (user) console.log("found it.");
-    if (!user) {
-      console.log("Did not found. Will create.");
-      user = await client.user.create({
-        data: {
-          name: "Anonymous",
-          phone: +phone,
-        },
-      });
-    }
-    console.log(user);
-  } */
-  return res.status(200).end();
+  return res.json({
+    ok: true,
+  });
 }
 
 export default withHandler("POST", handler);
