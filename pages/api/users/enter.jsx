@@ -1,9 +1,9 @@
 import client from "@/libs/server/client";
+import withHandler from "@/libs/server/withHandler";
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.status(401).end();
-  }
+async function handler(req, res) {
   console.log(req.body);
-  res.status(200).end();
+  return res.status(200).end();
 }
+
+export default withHandler("POST", handler);

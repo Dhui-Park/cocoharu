@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 
 export default function Enter() {
   const [enter, { loading, data, error }] = useMutation("/api/users/enter");
-  const [submitting, setSubmitting] = useState(false);
   const { register, handleSubmit, reset } = useForm();
   const [method, setMethod] = useState("email");
   const onEmailClick = () => {
@@ -19,9 +18,9 @@ export default function Enter() {
     setMethod("phone");
   };
   const onValid = (validForm) => {
+    if (loading) return;
     enter(validForm);
   };
-  console.log(loading, data, error);
   return (
     <div className="mt-10 px-4">
       <h3 className="text-center text-3xl font-bold">Enter to CocoHaru</h3>
